@@ -224,7 +224,7 @@ gdf = load_shapefile(SHAPEFILE)
 # LOAD TAB 2 DATA
 # =========================
 
-locality_loss = load_excel(
+locality_loss = load_excel_sheet(
     LOCALITY_LOSS_XLS,
     LOCALITY_LOSS_SHEET
 )
@@ -248,7 +248,7 @@ locality_loss = locality_loss[
 ].copy()
 
 
-rr_mg = load_excel(
+rr_mg = load_excel_sheet(
     RR_XLS,
     RR_MG_SHEET
 )
@@ -276,7 +276,7 @@ rr_mg_plot = rr_mg[
 # LOAD TAB 3 DATA
 # =========================
 
-locality_loss_mal = load_excel(
+locality_loss_mal = load_excel_sheet(
     LOCALITY_LOSS_XLS,
     LOCALITY_LOSS_SHEET
 )
@@ -300,7 +300,7 @@ locality_loss_mal = locality_loss_mal[
     locality_loss_mal["District"] == "MALLEE"
 ].copy()
 
-rr_mal = load_excel(
+rr_mal = load_excel_sheet(
     RR_XLS,
     RR_MAL_SHEET
 )
