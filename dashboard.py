@@ -78,7 +78,16 @@ from streamlit_plotly_events import plotly_events
 # =========================
 
 @st.cache_data
-def load_excel(path, sheet_name=None):
+def load_excel(path):
+
+    return pd.read_excel(path)
+
+
+@st.cache_data
+def load_excel_sheet(
+    path,
+    sheet_name
+):
 
     return pd.read_excel(
         path,
@@ -200,7 +209,6 @@ def focus_map_from_bar():
 # =========================
 
 df = load_excel(DATA_FILE)
-st.write(type(df))
 
 df.columns = df.columns.str.strip()
 
@@ -218,7 +226,7 @@ gdf = load_shapefile(SHAPEFILE)
 
 locality_loss = load_excel(
     LOCALITY_LOSS_XLS,
-    sheet_name=LOCALITY_LOSS_SHEET
+    LOCALITY_LOSS_SHEET
 )
 
 locality_loss.columns = locality_loss.columns.str.strip()
@@ -242,7 +250,7 @@ locality_loss = locality_loss[
 
 rr_mg = load_excel(
     RR_XLS,
-    sheet_name=RR_MG_SHEET
+    RR_MG_SHEET
 )
 
 rr_mg.columns = rr_mg.columns.str.strip()
@@ -270,7 +278,7 @@ rr_mg_plot = rr_mg[
 
 locality_loss_mal = load_excel(
     LOCALITY_LOSS_XLS,
-    sheet_name=LOCALITY_LOSS_SHEET
+    LOCALITY_LOSS_SHEET
 )
 
 locality_loss_mal.columns = locality_loss_mal.columns.str.strip()
@@ -294,7 +302,7 @@ locality_loss_mal = locality_loss_mal[
 
 rr_mal = load_excel(
     RR_XLS,
-    sheet_name=RR_MAL_SHEET
+    RR_MAL_SHEET
 )
 
 rr_mal.columns = rr_mal.columns.str.strip()
