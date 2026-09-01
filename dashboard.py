@@ -7,7 +7,7 @@
 # BASE DATA LOCATION
 # =========================
 
-HOST_FOLDER = r"C:/Users/pb0e/Downloads/Phils Scripts/jfmp_dashboard"
+HOST_FOLDER = "data"
 
 # =========================
 # TAB 1
