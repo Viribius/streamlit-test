@@ -200,6 +200,7 @@ def focus_map_from_bar():
 # =========================
 
 df = load_excel(DATA_FILE)
+st.write(type(df))
 
 df.columns = df.columns.str.strip()
 
