@@ -7,7 +7,8 @@
 # BASE DATA LOCATION
 # =========================
 
-HOST_FOLDER = "data"
+HOST_FOLDER = data
+#r"C:/Users/pb0e/Downloads/Phils Scripts/jfmp_dashboard"
 
 # =========================
 # TAB 1
@@ -74,6 +75,38 @@ from streamlit_plotly_events import plotly_events
 
 
 # =========================
+# CACHED LOADERS
+# =========================
+
+@st.cache_data
+def load_excel(path, sheet_name=None):
+
+    return pd.read_excel(
+        path,
+        sheet_name=sheet_name
+    )
+
+
+@st.cache_data
+def load_shapefile(path):
+
+    return gpd.read_file(path)
+
+
+@st.cache_data
+def load_text(path):
+
+    with open(
+        path,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        return f.read()
+
+
+
+# =========================
 # HELPER FUNCTIONS
 # =========================
 
@@ -84,14 +117,7 @@ def clear_chart_map_focus():
 
     st.session_state["map_focus_burn"] = None
 
-    # Toggle the radio so it refreshes burn_selection
-
-    st.session_state["map_display_mode"] = (
-        "Filtered burns"
-    )
-
     st.session_state["chart_reset_version"] += 1
-
 
 
 # CHART CLICK HANDLERS
@@ -167,20 +193,14 @@ def focus_map_from_bar():
                 "map_focus_burn"
             ] = clicked_burn
 
-
-
-def clear_chart_map_focus():
-
-    st.session_state[
-        "map_focus_burn"
-    ] = None
+   
 
 
 # =========================
 # LOAD TAB 1 DATA
 # =========================
 
-df = pd.read_excel(DATA_FILE)
+df = load_excel(DATA_FILE)
 
 df.columns = df.columns.str.strip()
 
@@ -189,14 +209,14 @@ df = df.sort_values(
     ascending=False
 )
 
-gdf = gpd.read_file(SHAPEFILE)
+gdf = load_shapefile(SHAPEFILE)
 
 
 # =========================
 # LOAD TAB 2 DATA
 # =========================
 
-locality_loss = pd.read_excel(
+locality_loss = load_excel(
     LOCALITY_LOSS_XLS,
     sheet_name=LOCALITY_LOSS_SHEET
 )
@@ -220,7 +240,7 @@ locality_loss = locality_loss[
 ].copy()
 
 
-rr_mg = pd.read_excel(
+rr_mg = load_excel(
     RR_XLS,
     sheet_name=RR_MG_SHEET
 )
@@ -248,7 +268,7 @@ rr_mg_plot = rr_mg[
 # LOAD TAB 3 DATA
 # =========================
 
-locality_loss_mal = pd.read_excel(
+locality_loss_mal = load_excel(
     LOCALITY_LOSS_XLS,
     sheet_name=LOCALITY_LOSS_SHEET
 )
@@ -272,7 +292,7 @@ locality_loss_mal = locality_loss_mal[
     locality_loss_mal["District"] == "MALLEE"
 ].copy()
 
-rr_mal = pd.read_excel(
+rr_mal = load_excel(
     RR_XLS,
     sheet_name=RR_MAL_SHEET
 )
