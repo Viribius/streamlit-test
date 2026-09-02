@@ -389,6 +389,8 @@ spring_priorities = load_text(
     SPRING_PRIORITIES
 )
 
+st.sidebar.write("✅ Data loaded")
+
 
 # =========================
 # PAGE SETUP
@@ -1576,7 +1578,7 @@ with tab1:
 
                     st.rerun()
 
-
+st.sidebar.write("✅ Tab 1 complete")
 
 # ==========================================================
 # TAB 2 - RESIDUAL RISK OUTCOMES
@@ -2014,7 +2016,7 @@ with tab2:
                 fig_locality,
                 use_container_width=True
             )
-
+st.sidebar.write("✅ Tab 2 complete")
 # ==========================================================
 # TAB 3 - MALLEE RESIDUAL RISK OUTCOMES
 # ==========================================================
@@ -2532,7 +2534,7 @@ with tab3:
             fig_locality_mal,
             use_container_width=True
         )
-
+st.sidebar.write("✅ Tab 3 complete")
 # ==========================================================
 # TAB 4 - SPRING_PRIORITIES
 # ==========================================================
@@ -2605,4 +2607,5 @@ with tab4:
 st.sidebar.caption(
     f"Render time: {time.time() - start_time:.2f} sec"
 )
+st.sidebar.write("✅ Tab 4 complete")
 
