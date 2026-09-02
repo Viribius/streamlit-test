@@ -113,7 +113,7 @@ TEXT = "#111111"
 # =========================
 
 @st.cache_data
-def build_map_gdf(gdf, df):
+def build_map_gdf(_gdf, df):
 
     df_map = df[
         [
@@ -132,7 +132,7 @@ def build_map_gdf(gdf, df):
         .str.upper()
     )
 
-    return gdf.merge(
+    return _gdf.merge(
         df_map,
         on="NAME_JOIN",
         how="inner"
