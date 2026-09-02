@@ -4,5 +4,3 @@ plotly
 openpyxl
 geopandas
 streamlit-plotly-events
-json
-re
