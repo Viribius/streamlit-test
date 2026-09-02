@@ -476,20 +476,22 @@ st.markdown(
 # TABS
 # =========================
 
-tab1, tab2, tab3, tab4 = st.tabs(
+page = st.radio(
+    "Navigation",
     [
         "Burn Priorities",
         "Murray Goldfields Residual Risk",
         "Mallee Residual Risk",
         "Spring Priorities"
-    ]
+    ],
+    horizontal=True
 )
 
 # ==========================================================
 # TAB 1 - BURN PRIORITIES
 # ==========================================================
 st.sidebar.write("✅ TAB 1 Start")
-with tab1:
+if page == "Burn Priorities":
 
     st.markdown(
         f'<div class="title">{APP_TITLE}</div>',
@@ -1584,7 +1586,7 @@ st.sidebar.write("✅ Tab 1 complete")
 # TAB 2 - RESIDUAL RISK OUTCOMES
 # ==========================================================
 
-with tab2:
+elif page == "Murray Goldfields Residual Risk":
 
     st.markdown(
         '<div class="title">Murray Goldfields Residual Risk Outcomes</div>',
@@ -2021,7 +2023,7 @@ st.sidebar.write("✅ Tab 2 complete")
 # TAB 3 - MALLEE RESIDUAL RISK OUTCOMES
 # ==========================================================
 
-with tab3:
+elif page == "Mallee Residual Risk":
 
     st.markdown(
         '<div class="title">Mallee Residual Risk Outcomes</div>',
@@ -2539,7 +2541,7 @@ st.sidebar.write("✅ Tab 3 complete")
 # TAB 4 - SPRING_PRIORITIES
 # ==========================================================
 
-with tab4:
+elif page == "Spring Priorities":
 
     st.markdown(
         '<div class="title">Spring Burn Summary</div>',
@@ -2603,9 +2605,9 @@ with tab4:
             with target_column:
                 with st.container(border=True):
                     st.markdown(section)
-
+st.sidebar.write("✅ Tab 4 complete")
 st.sidebar.caption(
     f"Render time: {time.time() - start_time:.2f} sec"
 )
-st.sidebar.write("✅ Tab 4 complete")
+
 
