@@ -840,7 +840,7 @@ with tab1:
 
                     fig_map = px.choropleth_map(
                         map_plot,
-                        geojson=geojson_cache,
+                        geojson=map_plot.__geo_interface__,
                         locations=map_plot.index,
                         color="RR Class",
 
@@ -888,7 +888,7 @@ with tab1:
 
                     fig_map = px.choropleth_map(
                         map_plot,
-                        geojson=geojson_cache,
+                        geojson=map_plot.__geo_interface__,
                         locations=map_plot.index,
                         color="JFMP Year Display",
                         color_discrete_map={
