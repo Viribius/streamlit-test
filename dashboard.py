@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 import geopandas as gpd
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
+import re
 
 
 # =====================================
@@ -89,6 +90,12 @@ RR_MAL_NARRATIVE_FILE = fr"{HOST_FOLDER}/residual_risk_narrative_mallee.txt"
 
 RR_MAL_SHEET = "Mallee"
 
+# =========================
+# TAB 4
+# =========================
+
+SPRING_PRIORITIES = fr"{HOST_FOLDER}/SpringPriorities.txt"
+SPRING_NARRATIVE = fr"{HOST_FOLDER}/SpringNarrative.txt"
 
 # =========================
 # STYLE
@@ -356,6 +363,17 @@ rr_mal_plot = rr_mal[
 ].copy()
 
 # =========================
+# LOAD TAB 4 DATA
+# =========================
+
+with open(SPRING_NARRATIVE, "r", encoding="utf-8") as f:
+    spring_narrative = f.read()
+
+with open(SPRING_PRIORITIES, "r", encoding="utf-8") as f:
+    spring_priorities = f.read()
+
+
+# =========================
 # PAGE SETUP
 # =========================
 
@@ -439,11 +457,12 @@ st.markdown(
 # TABS
 # =========================
 
-tab1, tab2, tab3 = st.tabs(
+tab1, tab2, tab3, tab4 = st.tabs(
     [
         "Burn Priorities",
         "Murray Goldfields Residual Risk",
-        "Mallee Residual Risk"
+        "Mallee Residual Risk",
+        "Spring Priorities"
     ]
 )
 
@@ -2487,3 +2506,75 @@ with tab3:
             fig_locality_mal,
             use_container_width=True
         )
+
+# ==========================================================
+# TAB 4 - SPRING_PRIORITIES
+# ==========================================================
+
+with tab4:
+
+    st.markdown(
+        '<div class="title">Spring Burn Summary</div>',
+        unsafe_allow_html=True
+    )
+
+    col1, col2 = st.columns([2,5])
+
+    with col1:
+
+        st.subheader("Spring Priorities")
+        
+        st.markdown(
+            f"""
+            <div style="
+                background-color:#e8f4fd;
+                color:#0f4c81;
+                padding:20px;
+                border-radius:10px;
+                font-size:18px;
+                line-height:1.6;
+                border-left:5px solid #1f77b4;
+            ">
+            {spring_narrative}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col2:
+
+        st.markdown("## 🔥 Priority Burns")
+
+        st.markdown(
+        'Note: Fire Invesitigation and training burns have been omitted from this assessment')
+
+        # Split the TXT content at each Markdown level-2 heading
+        burn_sections = re.split(
+            r"(?=^##\s+)",
+            spring_priorities,
+            flags=re.MULTILINE
+        )
+
+        # Remove blank sections
+        burn_sections = [
+            section.strip()
+            for section in burn_sections
+            if section.strip()
+        ]
+
+        priority_col1, priority_col2 = st.columns(2)
+
+        for index, section in enumerate(burn_sections):
+
+            target_column = (
+                priority_col1
+                if index % 2 == 0
+                else priority_col2
+            )
+
+            with target_column:
+                with st.container(border=True):
+                    st.markdown(section)
+
+    
+
