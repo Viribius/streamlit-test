@@ -254,7 +254,7 @@ def focus_map_from_bar():
 
 
 # =========================
-# LOAD TAB 1 DATA
+# LOAD  DATA
 # =========================
 
 df = load_excel(DATA_FILE)
@@ -1580,7 +1580,7 @@ if page == "Burn Priorities":
 
                     st.rerun()
 
-st.sidebar.write("✅ Tab 1 complete")
+    st.sidebar.write("✅ Tab 1 complete")
 
 # ==========================================================
 # TAB 2 - RESIDUAL RISK OUTCOMES
@@ -2018,7 +2018,7 @@ elif page == "Murray Goldfields Residual Risk":
                 fig_locality,
                 use_container_width=True
             )
-st.sidebar.write("✅ Tab 2 complete")
+    st.sidebar.write("✅ Tab 2 complete")
 # ==========================================================
 # TAB 3 - MALLEE RESIDUAL RISK OUTCOMES
 # ==========================================================
@@ -2536,7 +2536,7 @@ elif page == "Mallee Residual Risk":
             fig_locality_mal,
             use_container_width=True
         )
-st.sidebar.write("✅ Tab 3 complete")
+    st.sidebar.write("✅ Tab 3 complete")
 # ==========================================================
 # TAB 4 - SPRING_PRIORITIES
 # ==========================================================
