@@ -12,6 +12,7 @@ import geopandas as gpd
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import re
+import json
 
 
 # =====================================
@@ -110,6 +111,39 @@ TEXT = "#111111"
 # =========================
 # CACHED LOADERS
 # =========================
+
+@st.cache_data
+def build_map_gdf(gdf, df):
+
+    df_map = df[
+        [
+            "Treatment Name",
+            "district",
+            "JFMP Year",
+            "Residual Risk",
+            "Treatment Type"
+        ]
+    ].copy()
+
+    df_map["NAME_JOIN"] = (
+        df_map["Treatment Name"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+    return gdf.merge(
+        df_map,
+        on="NAME_JOIN",
+        how="inner"
+    )
+
+@st.cache_data
+def build_geojson(gdf):
+
+    return json.loads(
+        gdf.to_json()
+    )
 
 @st.cache_data
 def load_excel(path):
@@ -577,11 +611,11 @@ with tab1:
 
             # Join the Excel attributes onto the shapefile
 
-            map_gdf = gdf_web.merge(
-                df_map_attributes,
-                on="NAME_JOIN",
-                how="inner"
+            map_gdf = build_map_gdf(
+                gdf,
+                df
             )
+
 
             # -------------------------------------------------
             # MAP FILTERS
@@ -719,7 +753,9 @@ with tab1:
 
             # Reset the index so Plotly polygon IDs match cleanly
 
-            map_plot = map_plot.reset_index(drop=True)
+            geojson_cache = build_geojson(
+                map_plot
+            ))
 
 
             # Risk classes
@@ -811,7 +847,7 @@ with tab1:
 
                     fig_map = px.choropleth_map(
                         map_plot,
-                        geojson=map_plot.__geo_interface__,
+                        geojson=geojson_cache,
                         locations=map_plot.index,
                         color="RR Class",
 
@@ -859,7 +895,7 @@ with tab1:
 
                     fig_map = px.choropleth_map(
                         map_plot,
-                        geojson=map_plot.__geo_interface__,
+                        geojson=geojson_cache,
                         locations=map_plot.index,
                         color="JFMP Year Display",
                         color_discrete_map={
