@@ -948,7 +948,10 @@ with tab1:
                     )
                 )
 
-                st.info("Map temporarily disabled for performance testing")
+                 st.plotly_chart(
+                    fig_map,
+                    use_container_width=True
+                )
                
 
         except Exception as e:
