@@ -138,7 +138,6 @@ def build_map_gdf(_gdf, df):
         how="inner"
     )
 
-@st.cache_data
 def build_geojson(gdf):
 
     return json.loads(
