@@ -749,12 +749,7 @@ with tab1:
 
             # Reset the index so Plotly polygon IDs match cleanly
 
-            fig_map = px.choropleth_map(
-
-            map_plot,
-            
-            geojson=map_plot.__geo_interface__,
-
+            map_plot = map_plot.reset_index(drop=True)
 
             # Risk classes
             def classify_rr(rr):
