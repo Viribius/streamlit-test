@@ -1,3 +1,20 @@
+
+# =========================
+# CONFIGURATION AND DATA INPITS
+# =========================
+
+# =========================
+# IMPORTS
+# =========================
+import pandas as pd
+import streamlit as st
+import plotly.graph_objects as go
+import geopandas as gpd
+import plotly.express as px
+from streamlit_plotly_events import plotly_events
+import re
+import time
+
 # =====================================
 # PASSWORD PROTECTION
 # =====================================
@@ -28,21 +45,6 @@ if not st.session_state.authenticated:
     st.stop()
 
 
-# =========================
-# CONFIGURATION AND DATA INPITS
-# =========================
-
-# =========================
-# IMPORTS
-# =========================
-import pandas as pd
-import streamlit as st
-import plotly.graph_objects as go
-import geopandas as gpd
-import plotly.express as px
-from streamlit_plotly_events import plotly_events
-import re
-import time
 
 # =========================
 # BASE DATA LOCATION
