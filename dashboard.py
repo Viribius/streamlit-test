@@ -1038,16 +1038,20 @@ with tab1:
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            select_top10 = st.checkbox("Top 10")
-
+            if st.button("Top 10"):
+                st.session_state["burn_selection"] = burn_list[:10]
+        
         with col2:
-            select_top15 = st.checkbox("Top 15")
-
+            if st.button("Top 15"):
+                st.session_state["burn_selection"] = burn_list[:15]
+        
         with col3:
-            select_top20 = st.checkbox("Top 20")
-
+            if st.button("Top 20"):
+                st.session_state["burn_selection"] = burn_list[:20]
+        
         with col4:
-            select_all_burns = st.checkbox("All")
+            if st.button("All"):
+                st.session_state["burn_selection"] = burn_list
 
         if select_all_burns:
 
@@ -1070,11 +1074,13 @@ with tab1:
             default_selection = burn_list[:DEFAULT_TOP_N]
 
 
+        if "burn_selection" not in st.session_state:
+            st.session_state["burn_selection"] = burn_list[:10]
+        
         selected = st.multiselect(
             "Select burns",
             burn_list,
-            default=default_selection,
-            key = "burn_selection"
+            key="burn_selection"
         )
 
         view = filtered_df[
