@@ -15,34 +15,7 @@ import re
 import time
 
 
-# =====================================
-# PASSWORD PROTECTION
-# =====================================
 
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-if not st.session_state.authenticated:
-
-    entered_password = st.text_input(
-        "Password",
-        type="password"
-    )
-
-    if st.button("Login"):
-
-        if entered_password == st.secrets["password"]:
-
-            st.session_state.authenticated = True
-            st.rerun()
-
-        else:
-
-            st.error(
-                "Incorrect password"
-            )
-
-    st.stop()
 
 start_time = time.time()
 
@@ -1666,6 +1639,8 @@ with tab2:
             index=0,
             key="mg_projection_season"
         )
+
+        st.write(selected_season)
 
         selected_projection = projection_rows[
             projection_rows["Season"] == selected_season
