@@ -413,11 +413,13 @@ rr_mal_plot = rr_mal[
 # LOAD TAB 4 DATA
 # =========================
 
-with open(SPRING_NARRATIVE, "r", encoding="utf-8") as f:
-    spring_narrative = f.read()
+spring_narrative = load_text(
+    SPRING_NARRATIVE
+)
 
-with open(SPRING_PRIORITIES, "r", encoding="utf-8") as f:
-    spring_priorities = f.read()
+spring_priorities = load_text(
+    SPRING_PRIORITIES
+)
 
 
 # =========================
