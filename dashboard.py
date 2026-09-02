@@ -18,6 +18,8 @@ import time
 
 
 start_time = time.time()
+st.sidebar.write("Dahsbaord must load lots of Data")
+st.sidebar.write("Render Status checks below")
 
 # =========================
 # BASE DATA LOCATION
@@ -490,7 +492,6 @@ page = st.radio(
 # ==========================================================
 # TAB 1 - BURN PRIORITIES
 # ==========================================================
-st.sidebar.write("✅ TAB 1 Start")
 if page == "Burn Priorities":
 
     st.markdown(
