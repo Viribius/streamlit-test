@@ -12,7 +12,6 @@ import geopandas as gpd
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import re
-import json
 
 
 # =====================================
