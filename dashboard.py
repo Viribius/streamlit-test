@@ -14,13 +14,6 @@ from streamlit_plotly_events import plotly_events
 import re
 import time
 
-
-
-
-start_time = time.time()
-st.sidebar.write("Dahsbaord must load lots of Data")
-st.sidebar.write("Render Status checks below")
-
 # =========================
 # BASE DATA LOCATION
 # =========================
@@ -390,8 +383,6 @@ spring_narrative = load_text(
 spring_priorities = load_text(
     SPRING_PRIORITIES
 )
-
-st.sidebar.write("✅ Data loaded")
 
 
 # =========================
@@ -1446,7 +1437,6 @@ if page == "Burn Priorities":
         # =========================
         # CLICKABLE DOUGHNUT
         # =========================
-        st.sidebar.write("✅ DONUT Start")
         # Create a clean sequential dataset so the clicked segment number
         # always matches the correct treatment.
 
@@ -1581,7 +1571,6 @@ if page == "Burn Priorities":
 
                     st.rerun()
 
-    st.sidebar.write("✅ Tab 1 complete")
 
 # ==========================================================
 # TAB 2 - RESIDUAL RISK OUTCOMES
@@ -1643,20 +1632,6 @@ elif page == "Murray Goldfields Residual Risk":
             season_options,
             index=0,
             key="mg_projection_season"
-        )
-
-        st.write(
-            "Season selected:",
-            selected_season
-        )
-
-        filtered_rows = projection_rows[
-            projection_rows["Season"] == selected_season
-        ]
-        
-        st.write(
-            "Matching rows:",
-            len(filtered_rows)
         )
 
         selected_projection = projection_rows[
@@ -2019,7 +1994,6 @@ elif page == "Murray Goldfields Residual Risk":
                 fig_locality,
                 use_container_width=True
             )
-    st.sidebar.write("✅ Tab 2 complete")
 # ==========================================================
 # TAB 3 - MALLEE RESIDUAL RISK OUTCOMES
 # ==========================================================
@@ -2537,7 +2511,6 @@ elif page == "Mallee Residual Risk":
             fig_locality_mal,
             use_container_width=True
         )
-    st.sidebar.write("✅ Tab 3 complete")
 # ==========================================================
 # TAB 4 - SPRING_PRIORITIES
 # ==========================================================
@@ -2606,9 +2579,5 @@ elif page == "Spring Priorities":
             with target_column:
                 with st.container(border=True):
                     st.markdown(section)
-st.sidebar.write("✅ Tab 4 complete")
-st.sidebar.caption(
-    f"Render time: {time.time() - start_time:.2f} sec"
-)
 
 
