@@ -1663,7 +1663,8 @@ with tab2:
         selected_season = st.selectbox(
             "Projection Season",
             season_options,
-            index=0
+            index=0,
+            key="mg_projection_season"
         )
 
         selected_projection = projection_rows[
