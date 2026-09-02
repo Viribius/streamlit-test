@@ -488,7 +488,7 @@ tab1, tab2, tab3, tab4 = st.tabs(
 # ==========================================================
 # TAB 1 - BURN PRIORITIES
 # ==========================================================
-
+st.sidebar.write("✅ TAB 1 Start")
 with tab1:
 
     st.markdown(
@@ -1443,7 +1443,7 @@ with tab1:
         # =========================
         # CLICKABLE DOUGHNUT
         # =========================
-
+        st.sidebar.write("✅ DONUT Start")
         # Create a clean sequential dataset so the clicked segment number
         # always matches the correct treatment.
 
