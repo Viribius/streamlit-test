@@ -44,6 +44,7 @@ if not st.session_state.authenticated:
 
     st.stop()
 
+start_time = time.time()
 
 # =========================
 # BASE DATA LOCATION
