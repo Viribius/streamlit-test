@@ -755,7 +755,7 @@ with tab1:
 
             geojson_cache = build_geojson(
                 map_plot
-            ))
+            )
 
 
             # Risk classes
