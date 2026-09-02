@@ -12,6 +12,7 @@ import geopandas as gpd
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import re
+import time
 
 
 # =====================================
@@ -2611,5 +2612,7 @@ with tab4:
                 with st.container(border=True):
                     st.markdown(section)
 
-    
+st.sidebar.caption(
+    f"Render time: {time.time() - start_time:.2f} sec"
+)
 
