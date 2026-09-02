@@ -131,8 +131,21 @@ def load_excel_sheet(
 
 @st.cache_data
 def load_shapefile(path):
+    
+    gdf = gpd.read_file(path)
 
-    return gpd.read_file(path)
+    gdf = gdf.to_crs(
+        epsg=4326
+    )
+
+    gdf["NAME_JOIN"] = (
+        gdf["NAME"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+    return gdf)
 
 
 @st.cache_data
@@ -515,7 +528,7 @@ with tab1:
             # PREPARE SHAPEFILE
             # -------------------------------------------------
 
-            gdf_web = gdf.to_crs(epsg=4326).copy()
+            gdf_web = gdf
 
             # Clean the join fields to reduce failures caused by
             # leading/trailing spaces or inconsistent capitalisation
