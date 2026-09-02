@@ -138,11 +138,6 @@ def build_map_gdf(_gdf, df):
         how="inner"
     )
 
-def build_geojson(gdf):
-
-    return json.loads(
-        gdf.to_json()
-    )
 
 @st.cache_data
 def load_excel(path):
@@ -754,9 +749,11 @@ with tab1:
 
             # Reset the index so Plotly polygon IDs match cleanly
 
-            geojson_cache = build_geojson(
-                map_plot
-            )
+            fig_map = px.choropleth_map(
+
+            map_plot,
+            
+            geojson=map_plot.__geo_interface__,
 
 
             # Risk classes
