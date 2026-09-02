@@ -145,7 +145,7 @@ def load_shapefile(path):
         .str.upper()
     )
 
-    return gdf)
+    return gdf
 
 
 @st.cache_data
