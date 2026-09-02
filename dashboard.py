@@ -1023,7 +1023,7 @@ with tab1:
         ].copy()
 
 
-        st.markdown(
+            st.markdown(
             """
             **Filters first, then selects burns.**
 
@@ -1032,7 +1032,7 @@ with tab1:
             Defaults to top 10 burns that meet filter criteria.
             """
         )
-        
+
         burn_list = filtered_df["Treatment Name"].tolist()
 
         col1, col2, col3, col4 = st.columns(4)
@@ -1040,43 +1040,30 @@ with tab1:
         with col1:
             if st.button("Top 10"):
                 st.session_state["burn_selection"] = burn_list[:10]
-        
+
         with col2:
             if st.button("Top 15"):
                 st.session_state["burn_selection"] = burn_list[:15]
-        
+
         with col3:
             if st.button("Top 20"):
                 st.session_state["burn_selection"] = burn_list[:20]
-        
+
         with col4:
             if st.button("All"):
                 st.session_state["burn_selection"] = burn_list
 
-        if select_all_burns:
-
-            default_selection = burn_list
-
-        elif select_top20:
-
-            default_selection = burn_list[:20]
-
-        elif select_top15:
-
-            default_selection = burn_list[:15]
-
-        elif select_top10:
-
-            default_selection = burn_list[:10]
-
-        else:
-
-            default_selection = burn_list[:DEFAULT_TOP_N]
-
-
+        # First load
         if "burn_selection" not in st.session_state:
             st.session_state["burn_selection"] = burn_list[:10]
-        
+
+        # Remove burns that are no longer available after filtering
+        st.session_state["burn_selection"] = [
+            burn
+            for burn in st.session_state["burn_selection"]
+            if burn in burn_list
+        ]
+
         selected = st.multiselect(
             "Select burns",
             burn_list,
@@ -1086,14 +1073,16 @@ with tab1:
         view = filtered_df[
             filtered_df["Treatment Name"].isin(selected)
         ].copy()
-        
-        view = view.sort_values(by="Residual Risk", ascending=False)
+
+        view = view.sort_values(
+            by="Residual Risk",
+            ascending=False
+        )
 
         # cumulative
         view["cumulative"] = view["Residual Risk"].cumsum()
 
         # ✅ CALCULATE KPI EARLY
-
         total_selected = view["Residual Risk"].sum()
 
         # Total risk reduction across the ENTIRE 3-year JFMP
