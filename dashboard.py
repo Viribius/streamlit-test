@@ -948,10 +948,8 @@ with tab1:
                     )
                 )
 
-                st.plotly_chart(
-                    fig_map,
-                    use_container_width=True
-                )
+                st.info("Map temporarily disabled for performance testing")
+               
 
         except Exception as e:
 
