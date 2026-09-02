@@ -1640,7 +1640,19 @@ with tab2:
             key="mg_projection_season"
         )
 
-        st.write(selected_season)
+        st.write(
+            "Season selected:",
+            selected_season
+        )
+
+        filtered_rows = projection_rows[
+            projection_rows["Season"] == selected_season
+        ]
+        
+        st.write(
+            "Matching rows:",
+            len(filtered_rows)
+        )
 
         selected_projection = projection_rows[
             projection_rows["Season"] == selected_season
