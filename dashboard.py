@@ -416,6 +416,14 @@ spring_priorities = load_text(
     SPRING_PRIORITIES
 )
 
+# =========================
+# TAB 5
+# =========================
+
+#Consider shared data sources from TAB2
+
+RR_OPTIMAL_NARRATIVE_FILE = fr"{HOST_FOLDER}/rr_optimal_narrative.txt"
+
 
 # =========================
 # PAGE SETUP
@@ -507,7 +515,8 @@ page = st.radio(
         "Burn Priorities",
         "Murray Goldfields Residual Risk",
         "Mallee Residual Risk",
-        "Spring Priorities"
+        "Spring Priorities",
+        "Review: Strategy Delivery Performance (RR)"
     ],
     horizontal=True
 )
@@ -2611,5 +2620,473 @@ elif page == "Spring Priorities":
             with target_column:
                 with st.container(border=True):
                     st.markdown(section)
+
+# ==========================================================
+# TAB 5 - BUSHFIRE MANAGEMENT STRATEGY PERFORMANCE
+# ==========================================================
+
+elif page == "Review: Strategy Delivery Performance (RR)":
+
+    st.markdown(
+        '<div class="title">Bushfire Management Strategy Performance</div>',
+        unsafe_allow_html=True
+    )
+
+    # =====================================================
+    # Load TAB 5 DATA
+    # =====================================================
+
+    rr_mg_bms = pd.read_excel(
+        RR_XLS,
+        sheet_name=RR_MG_SHEET
+    )
+
+    rr_mallee_bms = pd.read_excel(
+        RR_XLS,
+        sheet_name="Mallee"
+        )
+
+    # =====================================================
+    # BMS PERFORMANCE DATAFRAME HANDLES
+    # =====================================================
+
+    rr_mg_bms = rr_mg_bms[
+        rr_mg_bms["Season"] >= 2020
+    ].copy()
+
+    rr_mg_bms["BMS Projected Risk"] = (
+        rr_mg_bms["BMS Projected Risk"]
+        .interpolate(method="linear")
+    )
+
+    rr_mg_bms["BMS Projected Risk Envelope (with error)"] = (
+    rr_mg_bms["BMS Projected Risk Envelope (with error)"]
+    .interpolate(method="linear")
+    
+    )
+
+    rr_mallee_bms = rr_mallee_bms[
+        rr_mallee_bms["Season"] >= 2020
+    ].copy()
+
+    rr_mallee_bms["BMS Projected Risk"] = (
+        rr_mallee_bms["BMS Projected Risk"]
+        .interpolate(method="linear")
+    )
+
+    rr_mallee_bms["BMS Projected Risk Envelope (with error)"] = (
+        rr_mallee_bms["BMS Projected Risk Envelope (with error)"]
+        .interpolate(method="linear")
+    )
+
+    # =====================================================
+    # Page Set Up
+    # =====================================================
+
+    top_left, top_right = st.columns([2, 4])
+
+    # =====================================================
+    # OVERVIEW
+    # =====================================================
+
+    with top_left:
+
+        st.subheader("10 yr Average Delivery Area (Ha)")
+
+        # Murray Goldfields
+
+        st.markdown(
+            """
+            <div style="
+                background-color:#f8f9fa;
+                padding:12px;
+                border-radius:10px;
+                border-left:6px solid #156082;
+                margin-bottom:15px;
+            ">
+
+            <b>Murray Goldfields</b><br>
+            Average annual delivery: <b>3,200 ha</b><br>
+            Strategic range: 3,500 – 7,500 ha<br>
+            Strategic average: 5,500 ha<br><br>
+
+            <div style="
+                background:#d9d9d9;
+                border-radius:5px;
+                height:18px;
+            ">
+                <div style="
+                    background:#156082;
+                    width:58%;
+                    height:18px;
+                    border-radius:5px;
+                "></div>
+            </div>
+
+            <small>58% of strategic average delivered</small>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Mallee
+
+        st.markdown(
+            """
+            <div style="
+                background-color:#f8f9fa;
+                padding:12px;
+                border-radius:10px;
+                border-left:6px solid #e97132;
+            ">
+
+            <b>Mallee</b><br>
+            Average annual delivery: <b>6,700 ha</b><br>
+            Strategic range: 12,000 – 18,000 ha<br>
+            Strategic average: 15,000 ha<br><br>
+
+            <div style="
+                background:#d9d9d9;
+                border-radius:5px;
+                height:18px;
+            ">
+                <div style="
+                    background:#e97132;
+                    width:45%;
+                    height:18px;
+                    border-radius:5px;
+                "></div>
+            </div>
+
+            <small>45% of strategic average delivered</small>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.caption("Delivery averages obtained from FFMVic Fuel Management Reports") 
+
+
+        st.subheader("Overview")
+
+        try:
+
+            with open(
+                RR_OPTIMAL_NARRATIVE_FILE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                st.markdown(f.read())
+
+        except:
+
+            st.warning(
+                "Bushfire Management Strategy narrative file not found."
+            )
+
+  
+    # =====================================================
+    # MGF GRAPH
+    # =====================================================
+    with top_right:
+
+        st.subheader("Residual Risk Acheved Vs Projected under Optomized Strategy")
+        
+        fig_opt = go.Figure()
+
+
+        # Historical residual risk
+
+        fig_opt.add_trace(
+            go.Scatter(
+                x=rr_mg_bms["Season"],
+                y=rr_mg_bms["Historical Residual Risk"],
+                mode="lines",
+                name="Residual Risk",
+                line=dict(
+                    color="#156082",
+                    width=3
+                ),
+                connectgaps=False
+            )
+        )
+
+        # Risk target
+
+        fig_opt.add_trace(
+            go.Scatter(
+                x=rr_mg_bms["Season"],
+                y=rr_mg_bms["Risk Target"],
+                mode="lines",
+                name="Risk Target",
+                line=dict(
+                    color="#e97132",
+                    width=3
+                ),
+                connectgaps=True
+            )
+        )
+
+        # Projected performance
+
+        fig_opt.add_trace(
+            go.Scatter(
+                x=rr_mg_bms["Season"],
+                y=rr_mg_bms["Projected Residual Risk with JFMP"],
+                mode="lines+markers",
+                name="Projected RR with JFMP",
+                line=dict(
+                    color="#196b24",
+                    width=4,
+                    dash = "dash"
+                ),
+                marker=dict(
+                    size=6
+                ),
+                connectgaps=False
+            )
+        )
+
+        # Bushfire Management Strategy trajectory
+
+        
+        fig_opt.add_trace(
+            go.Scatter(
+                x=rr_mg_bms["Season"],
+                y=rr_mg_bms["BMS Projected Risk"],
+                mode="lines",
+                name="Bushfire Management Strategy Projection",
+                line=dict(
+                    color="rgba(25,107,36,0.4)",
+                    width=1
+                ),
+                fill="tozeroy",
+                fillcolor="rgba(25,107,36,0.20)",
+                connectgaps=True
+            )
+        )
+
+        fig_opt.add_trace(
+            go.Scatter(
+                x=rr_mg_bms["Season"],
+                y=rr_mg_bms["BMS Projected Risk Envelope (with error)"],
+                mode="lines",
+                name="BMS Error Envelope",
+                line=dict(
+                    color="rgba(255,165,0,0.3)",
+                    width=0
+                ),
+                fill="tonexty",
+                fillcolor="rgba(255,165,0,0.20)"
+            )
+        )
+
+      
+
+
+        fig_opt.update_layout(
+
+            title={
+                "text": (
+                    "Murray Goldfields<br>"
+                    "<sup>Actual and Projected Residual Risk Compared to the "
+                    "Bushfire Management Strategy Trajectory</sup>"
+                ),
+                "x": 0.5,
+                "xanchor": "center"
+            },
+
+            xaxis=dict(
+                title="Season",
+                type="category"
+            ),
+
+            yaxis=dict(
+                title="Residual Risk (%)",
+                range=[0, 100],
+                ticksuffix="%"
+            ),
+
+            hovermode="x unified",
+
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.18,
+                xanchor="center",
+                x=0.5
+            ),
+
+            paper_bgcolor=CARD,
+            plot_bgcolor=CARD,
+
+            font=dict(
+                color=TEXT
+            ),
+
+            margin=dict(
+                l=60,
+                r=30,
+                t=90,
+                b=110
+            ),
+
+            height=550
+        )
+
+        st.plotly_chart(
+            fig_opt,
+            use_container_width=True
+        )
+
+        # =====================================================
+        # MALLEE GRAPH
+        # =====================================================
+
+        fig_mallee = go.Figure()
+
+        # Historical residual risk
+
+        fig_mallee.add_trace(
+            go.Scatter(
+                x=rr_mallee_bms["Season"],
+                y=rr_mallee_bms["Historical Residual Risk"],
+                mode="lines",
+                name="Residual Risk",
+                line=dict(
+                    color="#156082",
+                    width=3
+                ),
+                connectgaps=False
+            )
+        )
+
+        # Risk target
+
+        fig_mallee.add_trace(
+            go.Scatter(
+                x=rr_mallee_bms["Season"],
+                y=rr_mallee_bms["Risk Target"],
+                mode="lines",
+                name="Risk Target",
+                line=dict(
+                    color="#e97132",
+                    width=3
+                ),
+                connectgaps=True
+            )
+        )
+
+        # Projected performance
+
+        fig_mallee.add_trace(
+            go.Scatter(
+                x=rr_mallee_bms["Season"],
+                y=rr_mallee_bms["Projected Residual Risk with JFMP"],
+                mode="lines+markers",
+                name="Projected RR with JFMP",
+                line=dict(
+                    color="#196b24",
+                    width=4,
+                    dash="dash"
+                ),
+                marker=dict(
+                    size=6
+                ),
+                connectgaps=False
+            )
+        )
+
+        # Bushfire Management Strategy trajectory
+
+        fig_mallee.add_trace(
+            go.Scatter(
+                x=rr_mallee_bms["Season"],
+                y=rr_mallee_bms["BMS Projected Risk"],
+                mode="lines",
+                name="Bushfire Management Strategy Projection",
+                line=dict(
+                    color="rgba(25,107,36,0.4)",
+                    width=1
+                ),
+                fill="tozeroy",
+                fillcolor="rgba(25,107,36,0.20)",
+                connectgaps=True
+            )
+        )
+
+        # BMS Error Envelope
+
+        fig_mallee.add_trace(
+            go.Scatter(
+                x=rr_mallee_bms["Season"],
+                y=rr_mallee_bms["BMS Projected Risk Envelope (with error)"],
+                mode="lines",
+                name="BMS Error Envelope",
+                line=dict(
+                    color="rgba(255,165,0,0.3)",
+                    width=0
+                ),
+                fill="tonexty",
+                fillcolor="rgba(255,165,0,0.20)"
+            )
+        )
+
+        fig_mallee.update_layout(
+
+            title={
+                "text": (
+                    "Mallee<br>"
+                    "<sup>Actual and Projected Residual Risk Compared to the "
+                    "Bushfire Management Strategy Trajectory</sup>"
+                ),
+                "x": 0.5,
+                "xanchor": "center"
+            },
+
+            xaxis=dict(
+                title="Season",
+                type="category"
+            ),
+
+            yaxis=dict(
+                title="Residual Risk (%)",
+                range=[0, 100],
+                ticksuffix="%"
+            ),
+
+            hovermode="x unified",
+
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.18,
+                xanchor="center",
+                x=0.5
+            ),
+
+            paper_bgcolor=CARD,
+            plot_bgcolor=CARD,
+
+            font=dict(
+                color=TEXT
+            ),
+
+            margin=dict(
+                l=60,
+                r=30,
+                t=90,
+                b=110
+            ),
+
+            height=550
+        )
+
+        st.plotly_chart(
+            fig_mallee,
+            use_container_width=True
+        )
 
 
