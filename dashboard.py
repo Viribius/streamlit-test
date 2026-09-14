@@ -2,6 +2,7 @@
 # CONFIGURATION AND DATA INPITS
 # =========================
 
+
 # =========================
 # IMPORTS
 # =========================
@@ -14,6 +15,26 @@ from streamlit_plotly_events import plotly_events
 import re
 import time
 import os
+
+import streamlit as st
+import time
+
+# --------------------------------------------------
+# WELCOME MESSAGE
+# --------------------------------------------------
+
+if "welcome_shown" not in st.session_state:
+    st.session_state.welcome_shown = time.time()
+
+elapsed = time.time() - st.session_state.welcome_shown
+
+if elapsed < 30:
+    st.toast(
+        "🎉 Congratulations on using the dashboard and not just asking Phil.\n\n"
+        "You've saved Phil approximately 7 minutes and one unnecessary Teams message.",
+        icon="🍺"
+    )
+
 
 # =====================================
 # PASSWORD PROTECTION
