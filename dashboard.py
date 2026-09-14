@@ -1,4 +1,3 @@
-
 # =========================
 # CONFIGURATION AND DATA INPITS
 # =========================
@@ -14,6 +13,7 @@ import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import re
 import time
+import os
 
 # =====================================
 # PASSWORD PROTECTION
@@ -51,6 +51,7 @@ if not st.session_state.authenticated:
 # =========================
 
 HOST_FOLDER = "data"
+
 
 # =========================
 # TAB 1
@@ -99,6 +100,54 @@ RR_MAL_SHEET = "Mallee"
 SPRING_PRIORITIES = fr"{HOST_FOLDER}/SpringPriorities.txt"
 SPRING_NARRATIVE = fr"{HOST_FOLDER}/SpringNarrative.txt"
 
+# =========================
+# TAB 5
+# =========================
+
+#Consider shared data sources from TAB2
+
+RR_OPTIMAL_NARRATIVE_FILE = fr"{HOST_FOLDER}/rr_optimal_narrative.txt"
+
+# ==========================================================
+# TAB 6 - STRATEGY STATUS FILES
+# ==========================================================
+
+STRATEGY_STATUS_NARRATIVE_FILE = (
+    fr"{HOST_FOLDER}/Strategy_Status_Narrative.txt"
+)
+
+STRATEGY_STATUS_MG_NARRATIVE = (
+    f"{HOST_FOLDER}/strategy_status_murraygoldfields.txt"
+)
+
+STRATEGY_STATUS_SUMMARY_FILE = (
+    fr"{HOST_FOLDER}/Strategy_Status_Summary.csv"
+)
+
+STRATEGY_STATUS_OFH_FILE = (
+    fr"{HOST_FOLDER}/Strategy_Status_OFH.csv"
+)
+
+STRATEGY_STATUS_TFI_FILE = (
+    fr"{HOST_FOLDER}/Strategy_Status_TFI.csv"
+)
+
+STRATEGY_STATUS_GSS_FILE = (
+    fr"{HOST_FOLDER}/Strategy_Status_GSS.csv"
+)
+
+# PNG instead of spatial layer for the future map
+STRATEGY_OFH_PNG = (
+    f"{HOST_FOLDER}/Strategy_Status_OFH.png"
+)
+
+STRATEGY_TFI_PNG = (
+    f"{HOST_FOLDER}/Strategy_Status_TFI.png"
+)
+
+STRATEGY_GSS_PNG = (
+    f"{HOST_FOLDER}/Strategy_Status_GSS.png"
+)
 # =========================
 # STYLE
 # =========================
@@ -187,6 +236,8 @@ def load_text(path):
     ) as f:
 
         return f.read()
+
+
 
 
 
@@ -416,13 +467,8 @@ spring_priorities = load_text(
     SPRING_PRIORITIES
 )
 
-# =========================
-# TAB 5
-# =========================
 
-#Consider shared data sources from TAB2
 
-RR_OPTIMAL_NARRATIVE_FILE = fr"{HOST_FOLDER}/rr_optimal_narrative.txt"
 
 
 # =========================
@@ -516,7 +562,8 @@ page = st.radio(
         "Murray Goldfields Residual Risk",
         "Mallee Residual Risk",
         "Spring Priorities",
-        "Review: Strategy Delivery Performance (RR)"
+        "Review: Strategy Delivery Performance (RR)",
+        "Strategy Status"
     ],
     horizontal=True
 )
@@ -3090,3 +3137,885 @@ elif page == "Review: Strategy Delivery Performance (RR)":
         )
 
 
+# ==========================================================
+# TAB 6 - STRATEGY STATUS
+# ==========================================================
+
+elif page == "Strategy Status":
+
+    st.markdown(
+        '<div class="title">Strategy Status - Murray Goldfields</div>',
+        unsafe_allow_html=True
+    )
+
+    st.info(
+        """
+        This page assesses the current condition of strategic
+        fuel management areas using Overall Fuel Hazard,
+        Tolerable Fire Interval and Growth Stage Structure.
+
+        The page will identify where landscapes remain within
+        strategic thresholds and where further treatment may
+        be required.
+        """
+    )
+
+    # =====================================================
+    # LOAD TAB 6 SUMMARY DATA
+    # =====================================================
+
+
+
+    load_text(
+        STRATEGY_STATUS_MG_NARRATIVE
+    )
+
+
+
+    try:
+        strategy_status = pd.read_csv(
+            STRATEGY_STATUS_SUMMARY_FILE
+        )
+
+    except Exception as e:
+        strategy_status = pd.DataFrame()
+
+        st.warning(
+            "Strategy status summary data could not be loaded."
+        )
+
+        st.caption(
+            f"File: {STRATEGY_STATUS_SUMMARY_FILE}"
+        )
+
+    try:
+        strategy_ofh = pd.read_csv(
+            STRATEGY_STATUS_OFH_FILE
+        )
+
+    except Exception:
+        strategy_ofh = pd.DataFrame()
+
+    try:
+        strategy_tfi = pd.read_csv(
+            STRATEGY_STATUS_TFI_FILE
+        )
+
+    except Exception:
+        strategy_tfi = pd.DataFrame()
+
+    try:
+        strategy_gss = pd.read_csv(
+            STRATEGY_STATUS_GSS_FILE
+        )
+
+    except Exception:
+        strategy_gss = pd.DataFrame()
+
+    # =====================================================
+    # COLOUR HELPERS
+    # =====================================================
+
+    def status_colour(value):
+
+        value = str(value).strip().upper()
+
+        colour_map = {
+            "GREEN": "#70AD47",
+            "AMBER": "#FFC000",
+            "ORANGE": "#ED7D31",
+            "RED": "#C00000"
+        }
+
+        return colour_map.get(
+            value,
+            "#D9D9D9"
+        )
+
+
+    def threshold_status(above_threshold):
+
+        if pd.isna(above_threshold):
+            return "UNKNOWN"
+
+        if above_threshold <= 10:
+            return "GREEN"
+
+        elif above_threshold <= 20:
+            return "AMBER"
+
+        return "RED"
+
+
+    # =====================================================
+    # PAGE LAYOUT
+    # =====================================================
+
+    top_left, top_right = st.columns(
+        [1, 3]
+    )
+
+    bottom_left, bottom_right = st.columns(
+        [100, 1]
+    )
+
+    # =====================================================
+    # TOP LEFT - NARRATIVE
+    # =====================================================
+
+    with top_left:
+
+        st.subheader("Overview")
+
+        try:
+
+            with open(
+                STRATEGY_STATUS_MG_NARRATIVE,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                st.markdown(
+                    f.read()
+                )
+
+        except Exception:
+
+            st.info(
+                """
+                This page assesses the current condition of strategic
+                fuel management areas using Overall Fuel Hazard,
+                Tolerable Fire Interval and Growth Stage Structure.
+
+                The page will identify where landscapes remain within
+                strategic thresholds and where further treatment may
+                be required.
+                """
+            )
+
+        # -----------------------------------------------
+        # EXECUTIVE KPI
+        # -----------------------------------------------
+
+        if not strategy_status.empty:
+
+            district_above = (
+                strategy_status["Above_Threshold_Ha"].sum()
+            )
+
+            district_at_or_above = (
+                strategy_status["At_Trigger_Ha"].sum()
+                +
+                strategy_status["Above_Threshold_Ha"].sum()
+            )
+
+            district_total = (
+                strategy_status["Strategic_Area_Ha"].sum()
+            )
+
+            if district_total > 0:
+
+                district_above_pct = (
+                    district_above
+                    / district_total
+                    * 100
+                )
+
+                district_at_or_above_pct = (
+                    district_at_or_above
+                    / district_total
+                    * 100
+                )
+
+                # --------------------------------------------------
+                # KPI 1 - AT OR ABOVE THRESHOLD
+                # --------------------------------------------------
+
+                st.markdown(
+                    f"""
+                <div style='background-color:#f8f9fa;
+                            padding:14px;
+                            border-radius:10px;
+                            border-left:7px solid #ED7D31;
+                            margin-top:15px;
+                            margin-bottom:10px;'>
+
+                <div style='font-size:14px;color:#555555;'>
+                Strategic Area at or Above Threshold
+                </div>
+
+                <div style='font-size:32px;
+                            font-weight:700;
+                            color:#ED7D31;
+                            line-height:1.15;'>
+                {district_at_or_above_pct:.1f}%
+                </div>
+
+                <div style='font-size:12px;
+                            color:#666666;
+                            margin-top:4px;'>
+                {district_at_or_above:,.0f} ha of
+                {district_total:,.0f} ha assessed
+                </div>
+
+                </div>
+                """,
+                    unsafe_allow_html=True
+                )
+
+                # --------------------------------------------------
+                # KPI 2 - ABOVE THRESHOLD
+                # --------------------------------------------------
+
+                st.markdown(
+                    f"""
+                <div style='background-color:#f8f9fa;
+                            padding:14px;
+                            border-radius:10px;
+                            border-left:7px solid #C00000;
+                            margin-top:0px;
+                            margin-bottom:15px;'>
+
+                <div style='font-size:14px;color:#555555;'>
+                Strategic Area Above Threshold
+                </div>
+
+                <div style='font-size:32px;
+                            font-weight:700;
+                            color:#C00000;
+                            line-height:1.15;'>
+                {district_above_pct:.1f}%
+                </div>
+
+                <div style='font-size:12px;
+                            color:#666666;
+                            margin-top:4px;'>
+                {district_above:,.0f} ha of
+                {district_total:,.0f} ha assessed
+                </div>
+
+                </div>
+                """,
+                    unsafe_allow_html=True
+                )
+
+    # =====================================================
+    # TOP RIGHT - DISTRICT OFH HERO GRAPH
+    # =====================================================
+
+    with top_right:
+
+        st.subheader(
+            "Overall Fuel Hazard in Strategic Areas"
+        )
+
+        if not strategy_ofh.empty:
+
+            required_ofh_columns = [
+                "FMZ",
+                "Low",
+                "Moderate",
+                "High",
+                "Very_High",
+                "Extreme"
+            ]
+
+            missing_ofh_columns = [
+                column
+                for column in required_ofh_columns
+                if column not in strategy_ofh.columns
+            ]
+
+            if missing_ofh_columns:
+
+                st.warning(
+                    "The OFH summary is missing: "
+                    + ", ".join(missing_ofh_columns)
+                )
+
+            else:
+
+                ofh_district = (
+                    strategy_ofh
+                    .groupby(
+                        "FMZ",
+                        as_index=False
+                    )[
+                        [
+                            "Low",
+                            "Moderate",
+                            "High",
+                            "Very_High",
+                            "Extreme"
+                        ]
+                    ]
+                    .sum()
+                )
+
+                ofh_district["Total"] = (
+                    ofh_district[
+                        [
+                            "Low",
+                            "Moderate",
+                            "High",
+                            "Very_High",
+                            "Extreme"
+                        ]
+                    ]
+                    .sum(axis=1)
+                )
+
+                ofh_categories = [
+                    "Low",
+                    "Moderate",
+                    "High",
+                    "Very_High",
+                    "Extreme"
+                ]
+
+                ofh_colours = {
+                    "Low": "#70AD47",
+                    "Moderate": "#A9D18E",
+                    "High": "#FFC000",
+                    "Very_High": "#ED7D31",
+                    "Extreme": "#C00000"
+                }
+
+                ofh_names = {
+                    "Low": "Low",
+                    "Moderate": "Moderate",
+                    "High": "High",
+                    "Very_High": "Very High",
+                    "Extreme": "Extreme"
+                }
+
+                fig_ofh = go.Figure()
+
+                for category in ofh_categories:
+
+                    category_pct = (
+                        ofh_district[category]
+                        / ofh_district["Total"]
+                        * 100
+                    ).fillna(0)
+
+                    fig_ofh.add_trace(
+                        go.Bar(
+                            y=ofh_district["FMZ"],
+                            x=category_pct,
+                            name=ofh_names[category],
+                            orientation="h",
+                            marker=dict(
+                                color=ofh_colours[category]
+                            ),
+                            customdata=ofh_district[
+                                category
+                            ],
+                            hovertemplate=(
+                                "<b>%{y}</b><br>"
+                                + ofh_names[category]
+                                + ": %{x:.1f}%<br>"
+                                + "Area: %{customdata:,.0f} ha"
+                                + "<extra></extra>"
+                            )
+                        )
+                    )
+
+                # ==========================================
+                # Figure Format Further
+                # ==========================================
+
+               
+
+                fig_ofh.update_layout(
+
+                    title={
+                        "text": (
+                            "Murray Goldfields<br>"
+                            "<sup>Overall Fuel Hazard within "
+                            "Asset Protection and Bushfire "
+                            "Moderation Zones</sup>"
+                        ),
+                        "x": 0.5,
+                        "xanchor": "center"
+                    },
+
+                    barmode="stack",
+
+                    xaxis=dict(
+                        title="Percentage of Strategic Area",
+                        range=[0, 110],
+                        ticksuffix="%"
+                    ),
+
+                    yaxis=dict(
+                        title=None,
+                        categoryorder="array",
+                        categoryarray=[
+                            "BMZ",
+                            "APZ"
+                        ]
+                    ),
+
+                    legend=dict(
+                        orientation="h",
+                        yanchor="top",
+                        y=-0.22,
+                        xanchor="center",
+                        x=0.5
+                    ),
+
+                    paper_bgcolor=CARD,
+                    plot_bgcolor=CARD,
+
+                    font=dict(
+                        color=TEXT
+                    ),
+
+                    margin=dict(
+                        l=40,
+                        r=30,
+                        t=90,
+                        b=100
+                    ),
+
+                    height=430
+                )
+
+                st.plotly_chart(
+                    fig_ofh,
+                    use_container_width=True
+                )
+
+        else:
+
+            st.info(
+                "OFH district summary will appear here "
+                "when Strategy_Status_OFH.csv is available."
+            )
+
+        
+        st.subheader(
+            "Spatial Distribution"
+        )
+
+        map_theme = st.radio(
+            "Map theme",
+            [
+                "Overall Fuel Hazard",
+                "TFI Status",
+                "Growth Stage Structure"
+            ],
+            horizontal=True,
+            key="strategy_status_map_theme"
+        )
+
+        
+
+        if True:
+  
+
+
+                # ---------------------------------------------
+                # DISPLAY PNG
+                # ---------------------------------------------
+
+                if map_theme == "Overall Fuel Hazard":
+
+                    image_file = STRATEGY_OFH_PNG
+
+                elif map_theme == "TFI Status":
+
+                    image_file = STRATEGY_TFI_PNG
+
+                else:
+
+                    image_file = STRATEGY_GSS_PNG
+
+                if os.path.exists(image_file):
+
+                    st.image(
+                        image_file,
+                        use_container_width=True
+                    )
+
+
+                else:
+
+                    st.warning(
+                        f"Missing map image: {image_file}"
+                    )
+
+
+    # =====================================================
+    # BOTTOM LEFT - WORKCENTRE STATUS TABLE
+    # =====================================================
+
+    with bottom_left:
+
+        st.subheader(
+            "Strategic Status by Workcentre"
+        )
+
+        if not strategy_status.empty:
+
+            required_status_columns = [
+                "Workcentre",
+                "Strategic_Area_Ha",
+                "Below_Threshold_Ha",
+                "At_Trigger_Ha",
+                "Above_Threshold_Ha"
+            ]
+
+            missing_status_columns = [
+                column
+                for column in required_status_columns
+                if column not in strategy_status.columns
+            ]
+
+            if missing_status_columns:
+
+                st.warning(
+                    "The strategy status summary is missing: "
+                    + ", ".join(missing_status_columns)
+                )
+
+            else:
+
+                display_status = (
+                    strategy_status[
+                        required_status_columns
+                    ]
+                    .copy()
+                )
+
+                display_status["Below"] = (
+                    display_status["Below_Threshold_Ha"]
+                    / display_status["Strategic_Area_Ha"]
+                    * 100
+                )
+
+                display_status["At Trigger"] = (
+                    display_status["At_Trigger_Ha"]
+                    / display_status["Strategic_Area_Ha"]
+                    * 100
+                )
+
+                display_status["Above"] = (
+                    display_status["Above_Threshold_Ha"]
+                    / display_status["Strategic_Area_Ha"]
+                    * 100
+                )
+
+                display_status["Status"] = (
+                    display_status["Above"]
+                    .apply(threshold_status)
+                )
+
+                display_status = display_status[
+                    [
+                        "Workcentre",
+                        "Strategic_Area_Ha",
+                        "Below",
+                        "At Trigger",
+                        "Above",
+                        "Status"
+                    ]
+                ]
+
+                display_status = display_status.rename(
+                    columns={
+                        "Strategic_Area_Ha": "Strategic Area"
+                    }
+                )
+
+                display_status = (
+                    display_status
+                    .sort_values(
+                        "Above",
+                        ascending=False
+                    )
+                )
+
+                def colour_strategy_status(row):
+
+                    colour = status_colour(
+                        row["Status"]
+                    )
+
+                    styles = pd.Series(
+                        "",
+                        index=row.index
+                    )
+
+                    styles["Status"] = (
+                        f"background-color:{colour};"
+                        "color:white;"
+                        "font-weight:bold;"
+                        "text-align:center;"
+                    )
+
+                    styles["Above"] = (
+                        f"color:{colour};"
+                        "font-weight:bold;"
+                    )
+
+                    return styles
+
+
+                styled_status = (
+                    display_status
+                    .style
+                    .format(
+                        {
+                            "Strategic Area": "{:,.0f} ha",
+                            "Below": "{:.1f}%",
+                            "At Trigger": "{:.1f}%",
+                            "Above": "{:.1f}%"
+                        }
+                    )
+                    .apply(
+                        colour_strategy_status,
+                        axis=1
+                    )
+                )
+
+                st.dataframe(
+                    styled_status,
+                    use_container_width=True,
+                    hide_index=True,
+                    height=410
+                )
+
+        else:
+
+            st.info(
+                "Workcentre strategy status will appear here "
+                "when Strategy_Status_Summary.csv is available."
+            )
+
+    # =====================================================
+    # BOTTOM RIGHT - STRATEGY STATUS MAP
+    # =====================================================
+
+    #with bottom_right:
+    #removed bottom right area - made table full width.
+
+
+    # =====================================================
+    # SUPPORTING ECOLOGICAL CONDITION
+    # =====================================================
+
+    st.markdown("---")
+
+    with st.expander(
+        "Supporting ecological condition measures",
+        expanded=False
+    ):
+
+        tfi_col, gss_col = st.columns(
+            [1, 1]
+        )
+
+        # -------------------------------------------------
+        # TFI SUMMARY
+        # -------------------------------------------------
+
+        with tfi_col:
+
+            st.subheader(
+                "Tolerable Fire Interval"
+            )
+
+            if not strategy_tfi.empty:
+
+                required_tfi_columns = [
+                    "TFI_Status",
+                    "Area_Ha"
+                ]
+
+                if all(
+                    column in strategy_tfi.columns
+                    for column in required_tfi_columns
+                ):
+
+                    tfi_summary = (
+                        strategy_tfi
+                        .groupby(
+                            "TFI_Status",
+                            as_index=False
+                        )["Area_Ha"]
+                        .sum()
+                    )
+
+                    tfi_total = (
+                        tfi_summary["Area_Ha"].sum()
+                    )
+
+                    tfi_summary["Percent"] = (
+                        tfi_summary["Area_Ha"]
+                        / tfi_total
+                        * 100
+                    )
+
+                    tfi_colours = {
+                        "BELOW": "#C00000",
+                        "WITHIN": "#70AD47",
+                        "ABOVE": "#FFC000"
+                    }
+
+                    fig_tfi = go.Figure()
+
+                    fig_tfi.add_trace(
+                        go.Bar(
+                            x=tfi_summary["TFI_Status"],
+                            y=tfi_summary["Percent"],
+                            marker=dict(
+                                color=[
+                                    tfi_colours.get(
+                                        str(status).upper(),
+                                        "#A6A6A6"
+                                    )
+                                    for status
+                                    in tfi_summary["TFI_Status"]
+                                ]
+                            ),
+                            customdata=tfi_summary["Area_Ha"],
+                            hovertemplate=(
+                                "<b>%{x}</b><br>"
+                                "%{y:.1f}%<br>"
+                                "%{customdata:,.0f} ha"
+                                "<extra></extra>"
+                            )
+                        )
+                    )
+
+                    fig_tfi.update_layout(
+                        yaxis=dict(
+                            title="Percentage of Area",
+                            range=[0, 100],
+                            ticksuffix="%"
+                        ),
+                        xaxis=dict(
+                            title=None
+                        ),
+                        showlegend=False,
+                        paper_bgcolor=CARD,
+                        plot_bgcolor=CARD,
+                        font=dict(
+                            color=TEXT
+                        ),
+                        height=350,
+                        margin=dict(
+                            l=50,
+                            r=20,
+                            t=30,
+                            b=50
+                        )
+                    )
+
+                    st.plotly_chart(
+                        fig_tfi,
+                        use_container_width=True
+                    )
+
+            else:
+
+                st.info(
+                    "TFI summary data not yet available."
+                )
+
+        # -------------------------------------------------
+        # GSS SUMMARY
+        # -------------------------------------------------
+
+        with gss_col:
+
+            st.subheader(
+                "Growth Stage Structure"
+            )
+
+            if not strategy_gss.empty:
+
+                required_gss_columns = [
+                    "GSS_Stage",
+                    "Area_Ha"
+                ]
+
+                if all(
+                    column in strategy_gss.columns
+                    for column in required_gss_columns
+                ):
+
+                    gss_summary = (
+                        strategy_gss
+                        .groupby(
+                            "GSS_Stage",
+                            as_index=False
+                        )["Area_Ha"]
+                        .sum()
+                    )
+
+                    gss_total = (
+                        gss_summary["Area_Ha"].sum()
+                    )
+
+                    gss_summary["Percent"] = (
+                        gss_summary["Area_Ha"]
+                        / gss_total
+                        * 100
+                    )
+
+                    fig_gss = go.Figure()
+
+                    fig_gss.add_trace(
+                        go.Bar(
+                            x=gss_summary["GSS_Stage"],
+                            y=gss_summary["Percent"],
+                            marker=dict(
+                                color="#156082"
+                            ),
+                            customdata=gss_summary["Area_Ha"],
+                            hovertemplate=(
+                                "<b>%{x}</b><br>"
+                                "%{y:.1f}%<br>"
+                                "%{customdata:,.0f} ha"
+                                "<extra></extra>"
+                            )
+                        )
+                    )
+
+                    fig_gss.update_layout(
+                        yaxis=dict(
+                            title="Percentage of Area",
+                            range=[0, 100],
+                            ticksuffix="%"
+                        ),
+                        xaxis=dict(
+                            title=None
+                        ),
+                        showlegend=False,
+                        paper_bgcolor=CARD,
+                        plot_bgcolor=CARD,
+                        font=dict(
+                            color=TEXT
+                        ),
+                        height=350,
+                        margin=dict(
+                            l=50,
+                            r=20,
+                            t=30,
+                            b=50
+                        )
+                    )
+
+                    st.plotly_chart(
+                        fig_gss,
+                        use_container_width=True
+                    )
+
+            else:
+
+                st.info(
+                    "GSS summary data not yet available."
+                )
