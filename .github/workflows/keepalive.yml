@@ -13,4 +13,4 @@ jobs:
     steps:
       - name: Visit dashboard
         run: |
-          curl -L "https://lmr-srss-db.streamlit.app/"
+          curl --max-redirs 10 -I https://lmr-srss-db.streamlit.app/
