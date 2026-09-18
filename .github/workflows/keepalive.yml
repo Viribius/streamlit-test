@@ -1,11 +1,16 @@
-name: Test
+name: Keep Streamlit Alive
 
 on:
+  schedule:
+    - cron: '0 */6 * * *'
+
   workflow_dispatch:
 
 jobs:
-  hello:
+  ping:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo "Hello Phil"
+      - name: Visit dashboard
+        run: |
+          curl -L "https://lmr-srss-db.streamlit.app/"
