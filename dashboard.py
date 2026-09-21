@@ -43,7 +43,7 @@ if not st.session_state.authenticated:
 
     if login:
 
-        if entered_password == st.secrets["password"\]:
+        if entered_password == st.secrets["password"]:
 
             st.session_state.authenticated = True
             st.rerun()
