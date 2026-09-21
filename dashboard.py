@@ -23,7 +23,6 @@ import time
 import time
 import streamlit as st
 
-
 # =====================================
 # PASSWORD PROTECTION
 # =====================================
@@ -33,14 +32,18 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
 
-    entered_password = st.text_input(
-        "Password",
-        type="password"
-    )
+    with st.form("login_form"):
 
-    if st.button("Login"):
+        entered_password = st.text_input(
+            "Password",
+            type="password"
+        )
 
-        if entered_password == st.secrets["password"]:
+        login = st.form_submit_button("Login")
+
+    if login:
+
+        if entered_password == st.secrets["password"\]:
 
             st.session_state.authenticated = True
             st.rerun()
